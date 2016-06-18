@@ -1,3 +1,111 @@
+class rbNode:
+    def __init__(self, key, color=''):
+        self.key = key
+        self.p = None
+        self.left = None
+        self.right = None
+        self.color = color
+        self.dict = {}
+        self.count = 0
+
+#all are implemented based on the textbook
+class rbTree:
+    def __init__(self):
+        self.nil = rbNode(key=None, color='b')
+        self.root = self.nil # the root of our tree i.e. the entry to the tree
+
+    def insert(self, key):
+        if self.root is self.nil:
+            self.root = rbNode(key)
+            self.root.p = self.nil
+            self.root.left = self.nil
+            self.root.right = self.nil
+        else:
+            self._insert(rbNode(key))
+
+    def _insert(self, z):
+        y = self.nil
+        x = self.root
+        while x is not self.nil:
+            y = x
+            if z.key < x.key:
+                x = x.left
+            else:
+                x = x.right
+        z.p = y
+        if y is self.nil:
+            self.root = z
+        elif z.key < y.key:
+            y.left = z
+        else:
+            y.right = z
+        z.left = self.nil
+        z.right = self.nil
+        z.color = 'r'
+        self._insertFixup(z)
+
+    def _insertFixup(self, z):
+        while z.p.color is 'r':
+            if z.p == z.p.p.left:
+                y = z.p.p.right
+                if y.color == 'r':
+                    z.p.color == 'b'
+                    y.color = 'b'
+                    z.p.p.color = 'r'
+                    z = z.p.p
+                else:
+                    if z == z.p.right:
+                        z = z.p
+                        self._rotateLeft(z)
+                    z.p.color = 'b'
+                    z.p.p.color = 'r'
+                    self._rotateRight(z.p.p)
+            else:
+                y = z.p.p.left
+                if y.color == 'r':
+                    z.p.color == 'b'
+                    y.color = 'b'
+                    z.p.p.color = 'r'
+                    z = z.p.p
+                else:
+                    if z == z.p.left:
+                        z = z.p
+                        self._rotateRight(z)
+                    z.p.color = 'b'
+                    z.p.p.color = 'r'
+                    self._rotateLeft(z.p.p)
+        self.root.color = 'b'
+        
+    def _rotateLeft(self, x):
+        y = x.right
+        x.right = y.left
+        if y.left != self.nil:
+            y.left.p = x
+        y.p = x.p
+        if x.p == self.nil:
+            self.root = y
+        elif x == x.p.left:
+            x.p.left = y
+        else:
+            x.p.right = y
+        y.left = x
+        x.p = y
+
+    def _rotateRight(self, y):
+        x = y.left
+        y.left = x.right
+        if x.right != self.nil:
+            x.right.p = y
+        x.p = y.p
+        if y.p == self.nil:
+            self.root = x
+        elif y == y.p.right:
+            y.p.right = x
+        else:
+            y.p.left = x
+        x.right = y
+        y.p = x
+
 def main():
     t_user = 0
     t_friend = 0
@@ -9,6 +117,10 @@ def main():
     min_t = 0
     max_t = 0
     flag = 0
+    user_rb = rbTree()
+    word_rb = rbTree()
+    friend_heap = []
+    word_heap = []
         
     while True:
         print("=======================================================")
@@ -28,10 +140,11 @@ def main():
 
         a = input("Select Menu: ")
         if a == '0':
-            while flag == 1:
+            while flag is 1:
                 b = input("Love to kill the current database and rebuild a new one? (Y/N) :")
                 if b == 'Y':
                     flag = 0
+                    user_rb.root = user_rb.nil
                 elif b == 'N':
                     flag = -1
                     break
