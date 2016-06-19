@@ -8,12 +8,12 @@ class rbNode:
         self.dict = {}
         self.count = 0
 
-#all are implemented based on the textbook
+# all are implemented based on the textbook
 class rbTree:
     def __init__(self):
         self.nil = rbNode(key=None, color='b')
         self.root = self.nil # the root of our tree i.e. the entry to the tree
-
+    
     def insert(self, key):
         if self.root is self.nil:
             self.root = rbNode(key)
@@ -30,6 +30,8 @@ class rbTree:
             y = x
             if z.key < x.key:
                 x = x.left
+            elif z.key == x.key:
+                return
             else:
                 x = x.right
         z.p = y
@@ -106,6 +108,58 @@ class rbTree:
         x.right = y
         y.p = x
 
+    def search(self, key, x=None):
+        if x == None:
+            x = self.root
+        while key != x.key and x != self.nil:
+            if key < x.key:
+                x = x.left
+            else:
+                x = x.right
+        return x
+
+def readUserTxt(filename, rbtree):
+    cnt1, cnt2 = -1, 0
+    with open(filename, 'r') as f:
+        for line in f:
+            cnt1 += 1
+            if cnt1 % 4 == 0:
+                rbtree.insert(line)
+                x = rbtree.search(line)
+                x.count += 1
+                cnt2 += 1
+            else:
+                continue
+    return cnt2
+
+def readWordTxt(filename, rbtree):
+    cnt1, cnt2 = -1, 0
+    with open(filename, 'r') as f:
+        buf = []
+        for line in f:
+            cnt1 += 1
+            if cnt1 % 4 == 0:
+                buf.append(line)
+            elif cnt1 % 4 == 2:
+                rbtree.insert(line.rstrip())
+                usr = buf.pop().rstrip()
+                x = rbtree.search(line.rstrip())
+                x.count += 1
+                if usr in x.dict:
+                    x.dict[usr] += 1
+                else:
+                    x.dict[usr] = 1
+                cnt2 += 1
+    return cnt2
+
+# def readFriendTxt(filename, rbtree):
+
+def EmptyData(rbtree1, rbtree2):
+    if rbtree1.root == rbtree1.nil or rbtree2.root == rbtree2.nil:
+        return True
+    else:
+        return False
+
 def main():
     t_user = 0
     t_friend = 0
@@ -152,7 +206,11 @@ def main():
                     print("Wrong option.")
             if flag == 0:           
                 print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣\n")
+                
+                t_user = readUserTxt('user.txt', user_rb)
                 print("user.txt reading complete...")
+    
+                t_tweet = readWordTxt('word.txt', word_rb)
                 print("word.txt reading complete...")
                 print("friend.txt reading complete...")
                 print("\nTotal users: {}\nTotal friendship records: {}\nTotal tweets: {}\n" .format(t_user, t_friend, t_tweet))
@@ -160,6 +218,9 @@ def main():
                 flag = 1
             elif flag == -1:
                 flag = 1
+        elif EmptyData(user_rb, word_rb):
+            print("No data available to anaylize! Plz read data files first!")
+            continue
         elif a == '1':
             print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣\n")
             print("Total users: {}\nTotal friendship records: {}\nTotal tweets: {}\n" .format(t_user,t_friend,t_tweet))
@@ -171,10 +232,10 @@ def main():
             print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣")
         elif a == '99':
             print("Good Bye.")
-            return
+            return word_rb
         else:
             print("Wrong option. Try again.")
         
 
-main()
+a = main()
 
