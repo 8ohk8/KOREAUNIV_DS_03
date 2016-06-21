@@ -138,6 +138,35 @@ class rbTree:
             x = x.left
         return x
 
+    def findPred(self, x=None):
+        if x == None:
+            x = self.root
+        if x.left != self.nil:
+            x = self.maximum(x.left)
+            return x
+        else:
+            while x.p.left == x:
+                x = x.p
+                if x.p.p == self.nil:
+                    return self.nil
+            return x.p
+
+    def findTop5(self):
+        cnt = 1
+        buf = []
+        a = self.maximum()
+        buf.append(a)
+        while cnt < 6:
+            b = self.findPred(a)
+            if a.key != b.key:
+                cnt += 1
+                buf.append(b)
+                a = b
+            else:
+                a = b
+        return buf
+            
+
 def readUserTxt(filename, rbtree):
     cnt1, cnt2 = -1, 0
     with open(filename, 'r') as f:
@@ -265,21 +294,24 @@ def main():
                 else:
                     print("Wrong option.")
             if flag == 0:
+                print("reading user.txt...")
                 t_user = readUserTxt('user.txt', user_rb)
-                print("user.txt reading complete...")
-
+                print("user.txt reading complete")
+                
+                print("reading word.txt...")
                 t_tweet = readWordTxt('word.txt', word_rb, user_rb)
-                print("word.txt reading complete...")
+                print("word.txt reading complete")
 
+                print("reading friend.txt..")
                 t_friend = readFriendTxt('friend.txt', user_rb)
-                print("friend.txt reading complete...")
+                print("friend.txt reading complete")
 
                 buildFriendNumRBtree(user_rb.root, user_rb, friend_num_rb)
                 buildTweetsPerUserRBtree(user_rb.root, user_rb, tweets_per_rb)
                 buildWordFreqTRBtree(word_rb.root, word_rb, word_freq_rb)
                 
                 print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣\n")
-                print("\nTotal users: {}\nTotal friendship records: {}\nTotal tweets: {}\n" .format(t_user, t_friend, t_tweet))
+                print("Total users: {}\nTotal friendship records: {}\nTotal tweets: {}\n" .format(t_user, t_friend, t_tweet))
                 print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣")
                 flag = 1
             elif flag == -1:
@@ -289,7 +321,7 @@ def main():
             if a == '99':
                 print("Good Bye.")
                 return user_rb, word_rb, friend_num_rb, tweets_per_rb, word_freq_rb
-            print("No data available to anaylize! Plz read data files first!")
+            print("No data available to analyze! Plz read data files first!")
             continue
         
         elif a == '1':
@@ -312,7 +344,28 @@ def main():
             print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣")
             
         elif a == '3':
-            print("Yet to be implemented very soon.")
+            buf = word_freq_rb.findTop5()
+            
+            print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣\n")
+            print("<<Top 5 most tweeted words>>\n")
+            for i in buf:
+                print("{1} : {0} times tweeted" .format(i.key, i.string))
+            print("\n♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣")
+
+        elif a == '4':
+            buf = tweets_per_rb.findTop5()
+
+            print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣\n")
+            print("<<Top 5 users who tweeted the most>>\n")
+            for i in buf:
+                print("{1} : tweeted {0} times" .format(i.key, i.string))
+            print("\n♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣")
+
+        elif a == '5':
+            print("yet to be implemented")
+
+        elif a == '6':
+            print("yet to be implemented")
             
         elif a == '99':
             print("Good Bye.")
