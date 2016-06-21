@@ -288,6 +288,10 @@ def main():
                 if b == 'Y':
                     flag = 0
                     user_rb.root = user_rb.nil
+                    word_rb.root = word_rb.nil
+                    friend_num_rb.root = friend_num_rb.nil
+                    tweets_per_rb.root = tweets_per_rb.nil
+                    word_freq_rb.root = word_freq_rb.nil
                 elif b == 'N':
                     flag = -1
                     break
@@ -362,9 +366,65 @@ def main():
             print("\n♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣")
 
         elif a == '5':
+            b = input("Enter a word: ")
+            tmp = word_rb.search(b)
+            if tmp == word_rb.nil:
+                print("No user ever tweeted the word.")
+                continue
+            while True:
+                c = input("Would you like to store the data in usersOf{}.txt? (Y/N) " .format(b))
+                if c == 'Y':
+                    f = open('usersOf' + b + '.txt', 'w')
+                    print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣\n")
+                    print("<<Who tweeted the word '{}'?>>\n" .format(b))
+                    for key in tmp.buf:
+                       print(key)
+                       f.write(key + '\n')
+                    print("\n♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣")
+                    f.close()
+                    break
+                elif c == 'N':
+                    print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣\n")
+                    print("<<Who tweeted the word '{}'?>>\n" .format(b))
+                    for key in tmp.buf:
+                       print(key)
+                    print("\n♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣")
+                    break
+                else:
+                    print("Wrong option")
+                    
+        elif a == '6':
+            b = input("Enter a user id: ")
+            tmp = user_rb.search(b)
+            if tmp == user_rb.nil:
+                print("No user with such id number exists.")
+                continue
+            while True:
+                c = input("Would you like to store the data in friendsOf{}.txt? (Y/N) " .format(b))
+                if c == 'Y':
+                    f = open('friendsOf' + b + '.txt', 'w')
+                    print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣\n")
+                    print("<<Who are the friends of the user '{}'?>>\n" .format(b))
+                    for key in tmp.buf:
+                       print(key)
+                       f.write(key + '\n')
+                    print("\n♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣")
+                    f.close()
+                    break
+                elif c == 'N':
+                    print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣\n")
+                    print("<<Who are the friends of the user '{}'?>>\n" .format(b))
+                    for key in tmp.buf:
+                       print(key)
+                    print("\n♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣")
+                    break
+                else:
+                    print("Wrong option")
+
+        elif a == '7':
             print("yet to be implemented")
 
-        elif a == '6':
+        elif a == '8':
             print("yet to be implemented")
             
         elif a == '99':
