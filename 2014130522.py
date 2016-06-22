@@ -57,7 +57,7 @@ class rbTree:
             if z.p == z.p.p.left:
                 y = z.p.p.right
                 if y.color == 'r':
-                    z.p.color == 'b'
+                    z.p.color = 'b'
                     y.color = 'b'
                     z.p.p.color = 'r'
                     z = z.p.p
@@ -71,7 +71,7 @@ class rbTree:
             else:
                 y = z.p.p.left
                 if y.color == 'r':
-                    z.p.color == 'b'
+                    z.p.color = 'b'
                     y.color = 'b'
                     z.p.p.color = 'r'
                     z = z.p.p
@@ -112,7 +112,7 @@ class rbTree:
         else:
             y.p.left = x
         x.right = y
-        y.p = x
+        y.p = x 
 
     def search(self, key, x=None):
         if x == None:
@@ -165,8 +165,88 @@ class rbTree:
             else:
                 a = b
         return buf
-            
 
+    def transplant(self, u, v):
+        if u.p == self.nil:
+            self.root = v
+        elif u == u.p.left:
+            u.p.left = v
+        else:
+            u.p.right = v
+        v.p = u.p
+
+    def delete(self, z):
+        y = z
+        y_original_color = y.color
+        if z.left == self.nil:
+            x = z.right
+            self.transplant(z, z.right)
+        elif z.right == self.nil:
+            x = z.left
+            self.transplant(z, z.left)
+        else:
+            y = self.minimum(z.right)
+            y_original_color = y.color
+            x = y.right
+            if y.p == z:
+                x.p = y
+            else:
+                self.transplant(y, y.right)
+                y.right = z.right
+                y.right.p = y
+            self.transplant(z, y)
+            y.left = z.left
+            y.left.p = y
+            y.color = z.color
+        if y_original_color == 'b':
+            self._deleteFixup(x)
+
+    def _deleteFixup(self, x):
+        while x != self.root and x.color == 'b':
+            if x == x.p.left:
+                w = x.p.right
+                if w.color == 'r':
+                    w.color = 'b'
+                    x.p.color = 'r'
+                    self._rotateLeft(x.p)
+                    w = x.p.right
+                if w.left.color == 'b' and w.right.color == 'b':
+                    w.color = 'r'
+                    x = x.p
+                elif w.right.color == 'b':
+                    w.left.color = 'b'
+                    w.color = 'r'
+                    self._rotateRight(w)
+                elif w.color == 'b' and w.right.color == 'r':
+                    w = x.p.right
+                    w.color = x.p.color
+                    x.p.color = 'b'
+                    w.right.color = 'b'
+                    self._rotateLeft(x.p)
+                    x = self.root
+            else:
+                w = x.p.left
+                if w.color == 'r':
+                    w.color = 'b'
+                    x.p.color = 'r'
+                    self._rotateRight(x.p)
+                    w = x.p.right
+                if w.right.color == 'b' and w.left.color == 'b':
+                    w.color = 'r'
+                    x = x.p
+                elif w.left.color == 'b':
+                    w.right.color = 'b'
+                    w.color = 'r'
+                    self._rotateLeft(w)
+                else:
+                    w = x.p.left
+                    w.color = x.p.color
+                    x.p.color = 'b'
+                    w.left.color = 'b'
+                    self._rotateRight(x.p)
+                    x = self.root
+        x.color = 'b'
+        
 def readUserTxt(filename, rbtree):
     cnt1, cnt2 = -1, 0
     with open(filename, 'r') as f:
@@ -234,19 +314,32 @@ def buildTweetsPerUserRBtree(user_node, user_rb, rbtree):
         buildTweetsPerUserRBtree(node.right, user_rb, rbtree)
     
     
-def buildWordFreqTRBtree(word_node, word_rb, rbtree):
+def buildWordFreqRBtree(word_node, word_rb, rbtree):
     node = word_node
     if node.left is not word_rb.nil:
-        buildWordFreqTRBtree(node.left, word_rb, rbtree)
+        buildWordFreqRBtree(node.left, word_rb, rbtree)
     rbtree.insert(key=node.count, string=node.key)
     if node.right is not word_rb.nil:
-        buildWordFreqTRBtree(node.right, word_rb, rbtree)
+        buildWordFreqRBtree(node.right, word_rb, rbtree)
         
 def IsDataEmpty(rbtree1, rbtree2):
     if rbtree1.root == rbtree1.nil or rbtree2.root == rbtree2.nil:
         return True
     else:
         return False
+
+def rb_print(tree, level):
+    if (tree.right):
+        rb_print(tree.right, level + 1)
+    for i in range(level):
+        print('    ', end = '')
+    if tree.color == 'r':
+        color = 'red'
+    else:
+        color = 'blk'
+    print("{} :{}" .format(color, tree.key))
+    if (tree.left):
+        rb_print(tree.left, level + 1)
 
 def main():
     t_user = 0
@@ -284,7 +377,7 @@ def main():
         a = input("Select Menu: ")
         if a == '0':
             while flag is 1:
-                b = input("Love to kill the current database and rebuild a new one? (Y/N) :")
+                b = input("Love to kill the current database and rebuild a new one? (Y/N) ")
                 if b == 'Y':
                     flag = 0
                     user_rb.root = user_rb.nil
@@ -312,11 +405,8 @@ def main():
 
                 buildFriendNumRBtree(user_rb.root, user_rb, friend_num_rb)
                 buildTweetsPerUserRBtree(user_rb.root, user_rb, tweets_per_rb)
-                buildWordFreqTRBtree(word_rb.root, word_rb, word_freq_rb)
+                buildWordFreqRBtree(word_rb.root, word_rb, word_freq_rb)
                 
-                print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣\n")
-                print("Total users: {}\nTotal friendship records: {}\nTotal tweets: {}\n" .format(t_user, t_friend, t_tweet))
-                print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣")
                 flag = 1
             elif flag == -1:
                 flag = 1
@@ -422,9 +512,23 @@ def main():
                     print("Wrong option")
 
         elif a == '7':
+            b = input("Enter a word: ")
+            tmp = word_rb.search(b)
+            if tmp == word_rb.nil:
+                print("Cannot find any mention of such a word.")
+            else:
+                word_rb.delete(tmp)
+                
+        elif a == '8':
+            b = input("Enter a word: ")
+            tmp = word_rb.search(b)
+            if tmp == word_rb.nil:
+                print("No user ever mention the word already.")
+
+        elif a == '9':
             print("yet to be implemented")
 
-        elif a == '8':
+        elif a == '10':
             print("yet to be implemented")
             
         elif a == '99':
