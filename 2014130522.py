@@ -124,19 +124,7 @@ class rbTree:
             else:
                 x = x.right
         return x
-
-    def searchSpecial(self, key, string, x=None):
-        if x == None:
-            x = self.root
-        while key != x.key and x!= self.nil:
-            if key < x.key:
-                x = x.left
-            else:
-                x = x.right
-        while string != x.string and x != self.nil:
-            x = x.right
-        return x
-
+    
     def maximum(self, x=None):
         if x == None:
             x = self.root
