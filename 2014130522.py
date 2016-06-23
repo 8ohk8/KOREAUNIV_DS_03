@@ -6,6 +6,7 @@ class rbNode:
         self.right = None
         self.color = color
         self.buf = {}
+        self.buf2 = {}
         self.count = 0
         self.string = string
 
@@ -112,7 +113,7 @@ class rbTree:
         else:
             y.p.left = x
         x.right = y
-        y.p = x 
+        y.p = x
 
     def search(self, key, x=None):
         if x == None:
@@ -122,6 +123,18 @@ class rbTree:
                 x = x.left
             else:
                 x = x.right
+        return x
+
+    def searchSpecial(self, key, string, x=None):
+        if x == None:
+            x = self.root
+        while key != x.key and x!= self.nil:
+            if key < x.key:
+                x = x.left
+            else:
+                x = x.right
+        while string != x.string and x != self.nil:
+            x = x.right
         return x
 
     def maximum(self, x=None):
@@ -230,7 +243,7 @@ class rbTree:
                     w.color = 'b'
                     x.p.color = 'r'
                     self._rotateRight(x.p)
-                    w = x.p.right
+                    w = x.p.left
                 if w.right.color == 'b' and w.left.color == 'b':
                     w.color = 'r'
                     x = x.p
@@ -248,20 +261,16 @@ class rbTree:
         x.color = 'b'
         
 def readUserTxt(filename, rbtree):
-    cnt1, cnt2 = -1, 0
+    cnt1 = -1
     with open(filename, 'r') as f:
         for line in f:
             cnt1 += 1
             if cnt1 % 4 == 0:
                 tmp = line.rstrip()
                 rbtree.insert(tmp)
-                cnt2 += 1
-            else:
-                continue
-    return cnt2
-
+                
 def readWordTxt(filename, rbtree, user_rb):
-    cnt1, cnt2 = -1, 0
+    cnt1 = -1
     with open(filename, 'r') as f:
         buf = []
         for line in f:
@@ -269,9 +278,10 @@ def readWordTxt(filename, rbtree, user_rb):
             if cnt1 % 4 == 0:
                 buf.append(line)
             elif cnt1 % 4 == 2:
-                rbtree.insert(line.rstrip())
+                word = line.rstrip()
+                rbtree.insert(word)
                 usr = buf.pop().rstrip()
-                x = rbtree.search(line.rstrip())
+                x = rbtree.search(word)
                 x.count += 1
                 if usr in x.buf:
                     x.buf[usr] += 1
@@ -279,11 +289,13 @@ def readWordTxt(filename, rbtree, user_rb):
                     x.buf[usr] = 1
                 y = user_rb.search(usr)
                 y.count += 1
-                cnt2 += 1
-    return cnt2
-
+                if word in y.buf2:
+                    y.buf2[word] += 1
+                else:
+                    y.buf2[word] = 1
+            
 def readFriendTxt(filename, rbtree):
-    cnt1, cnt2 = -1, 0
+    cnt1 = -1
     x = None
     with open(filename, 'r') as f:
         for line in f:
@@ -293,34 +305,38 @@ def readFriendTxt(filename, rbtree):
                 x = rbtree.search(tmp)
             elif cnt1 % 3 == 1:
                 x.buf[tmp] = 1
-                cnt2 += 1
-        return cnt2
 
-def buildFriendNumRBtree(user_node, user_rb, rbtree):
+def buildFriendNumRBtree(user_node, user_rb, rbtree, total, total2):
     node = user_node
     if node.left is not user_rb.nil:
-        buildFriendNumRBtree(node.left, user_rb, rbtree)
+        total, total2 = buildFriendNumRBtree(node.left, user_rb, rbtree, total, total2)
     rbtree.insert(key=node.buflen, string=node.key)
+    total += 1
+    total2 += node.buflen
     if node.right is not user_rb.nil:
-        buildFriendNumRBtree(node.right, user_rb, rbtree)
+        total, total2 = buildFriendNumRBtree(node.right, user_rb, rbtree, total, total2)
+    return total, total2
 
-
-def buildTweetsPerUserRBtree(user_node, user_rb, rbtree):
+def buildTweetsPerUserRBtree(user_node, user_rb, rbtree, total):
     node = user_node
     if node.left is not user_rb.nil:
-        buildTweetsPerUserRBtree(node.left, user_rb, rbtree)
+       total = buildTweetsPerUserRBtree(node.left, user_rb, rbtree, total)
     rbtree.insert(key=node.count, string=node.key)
+    total += node.count
     if node.right is not user_rb.nil:
-        buildTweetsPerUserRBtree(node.right, user_rb, rbtree)
+        total = buildTweetsPerUserRBtree(node.right, user_rb, rbtree, total)
+    return total
     
     
-def buildWordFreqRBtree(word_node, word_rb, rbtree):
+def buildWordFreqRBtree(word_node, word_rb, rbtree, total):
     node = word_node
     if node.left is not word_rb.nil:
-        buildWordFreqRBtree(node.left, word_rb, rbtree)
+        total = buildWordFreqRBtree(node.left, word_rb, rbtree, total)
     rbtree.insert(key=node.count, string=node.key)
+    total += node.count
     if node.right is not word_rb.nil:
-        buildWordFreqRBtree(node.right, word_rb, rbtree)
+        total =buildWordFreqRBtree(node.right, word_rb, rbtree, total)
+    return total
         
 def IsDataEmpty(rbtree1, rbtree2):
     if rbtree1.root == rbtree1.nil or rbtree2.root == rbtree2.nil:
@@ -328,7 +344,7 @@ def IsDataEmpty(rbtree1, rbtree2):
     else:
         return False
 
-def rb_print(tree, level):
+def rbPrint(tree, level):
     if (tree.right):
         rb_print(tree.right, level + 1)
     for i in range(level):
@@ -341,6 +357,14 @@ def rb_print(tree, level):
     if (tree.left):
         rb_print(tree.left, level + 1)
 
+def traversalWhilePopping(node, user_rb, userid):
+    if node.left != user_rb.nil:
+        traversalWhilePopping(node.left, user_rb, userid)
+    if userid in node.buf:
+        node.buf.pop(userid)
+    if node.right != user_rb.nil:
+        traversalWhilePopping(node.right, user_rb, userid)
+        
 def main():
     t_user = 0
     t_friend = 0
@@ -392,20 +416,20 @@ def main():
                     print("Wrong option.")
             if flag == 0:
                 print("reading user.txt...")
-                t_user = readUserTxt('user.txt', user_rb)
+                readUserTxt('user.txt', user_rb)
                 print("user.txt reading complete")
                 
                 print("reading word.txt...")
-                t_tweet = readWordTxt('word.txt', word_rb, user_rb)
+                readWordTxt('word.txt', word_rb, user_rb)
                 print("word.txt reading complete")
 
                 print("reading friend.txt..")
-                t_friend = readFriendTxt('friend.txt', user_rb)
+                readFriendTxt('friend.txt', user_rb)
                 print("friend.txt reading complete")
 
-                buildFriendNumRBtree(user_rb.root, user_rb, friend_num_rb)
-                buildTweetsPerUserRBtree(user_rb.root, user_rb, tweets_per_rb)
-                buildWordFreqRBtree(word_rb.root, word_rb, word_freq_rb)
+                t_user, t_friend = buildFriendNumRBtree(user_rb.root, user_rb, friend_num_rb, 0, 0)
+                t_tweet = buildTweetsPerUserRBtree(user_rb.root, user_rb, tweets_per_rb, 0)
+                assert t_tweet == buildWordFreqRBtree(word_rb.root, word_rb, word_freq_rb, 0)
                 
                 flag = 1
             elif flag == -1:
@@ -414,7 +438,7 @@ def main():
         elif IsDataEmpty(user_rb, word_rb):
             if a == '99':
                 print("Good Bye.")
-                return user_rb, word_rb, friend_num_rb, tweets_per_rb, word_freq_rb
+                return
             print("No data available to analyze! Plz read data files first!")
             continue
         
@@ -433,8 +457,8 @@ def main():
             max_t = tweets_per_rb.maximum().key
             
             print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣\n")
-            print("Average number of friends: {:.3f}\nMinimum number of friends: {}\nMaximum number of friends: {}\n". format(avg_f, min_f, max_f))
-            print("Average tweets per user: {:.3f}\nMinimum tweets per user: {}\nMaximum tweets per user: {}\n" .format(avg_t ,min_t ,max_t))
+            print("Average number of friends: {:.5f}\nMinimum number of friends: {}\nMaximum number of friends: {}\n". format(avg_f, min_f, max_f))
+            print("Average tweets per user: {:.5f}\nMinimum tweets per user: {}\nMaximum tweets per user: {}\n" .format(avg_t ,min_t ,max_t))
             print("♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣♣")
             
         elif a == '3':
@@ -518,13 +542,45 @@ def main():
                 print("Cannot find any mention of such a word.")
             else:
                 word_rb.delete(tmp)
-                
+                for key in tmp.buf:
+                    x = user_rb.search(key=key)
+                    x.count -= tmp.buf[key]
+                    x.buf2.pop(tmp.key)
+                friend_num_rb.root = friend_num_rb.nil
+                tweets_per_rb.root = tweets_per_rb.nil
+                word_freq_rb.root = word_freq_rb.nil
+                t_user, t_friend = buildFriendNumRBtree(user_rb.root, user_rb, friend_num_rb, 0, 0)
+                t_tweet = buildTweetsPerUserRBtree(user_rb.root, user_rb, tweets_per_rb, 0)
+                assert t_tweet == buildWordFreqRBtree(word_rb.root, word_rb, word_freq_rb, 0)
+                print("All mentions of {} are deleted." .format(b))
+                    
         elif a == '8':
             b = input("Enter a word: ")
             tmp = word_rb.search(b)
             if tmp == word_rb.nil:
                 print("No user ever mention the word already.")
-
+            else:
+                buf = []
+                for key in tmp.buf:
+                    buf.append(key)
+                for key in buf:
+                    x = user_rb.search(key) # O(logn)
+                    t_tweet -= x.count
+                    for key in x.buf2:
+                        z = word_rb.search(key) # O(logn)
+                        z.count -= z.buf[x.key]
+                        z.buf.pop(x.key) # O(1) (Average)
+                    traversalWhilePopping(user_rb.root, user_rb, x.key) # O(n) (Average)
+                    user_rb.delete(x)
+                word_rb.delete(tmp)
+                friend_num_rb.root = friend_num_rb.nil
+                tweets_per_rb.root = tweets_per_rb.nil
+                word_freq_rb.root = word_freq_rb.nil
+                t_user, t_friend = buildFriendNumRBtree(user_rb.root, user_rb, friend_num_rb, 0, 0)
+                t_tweet = buildTweetsPerUserRBtree(user_rb.root, user_rb, tweets_per_rb, 0)
+                assert t_tweet == buildWordFreqRBtree(word_rb.root, word_rb, word_freq_rb, 0)
+                print("All users who mentioned the word {} are deleted." .format(b))
+                
         elif a == '9':
             print("yet to be implemented")
 
@@ -533,11 +589,9 @@ def main():
             
         elif a == '99':
             print("Good Bye.")
-            return user_rb, word_rb, friend_num_rb, tweets_per_rb, word_freq_rb
+            return
         
         else:
             print("Wrong option. Try again.")
 
-
-a, b, c, d, e = main()
-
+main()
