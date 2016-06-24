@@ -1,0 +1,169 @@
+<<Manual for TwittyTidbit Users>> 
+developed and distributed by Hyeongeun Oh (student # 2014130522 (Class 3))
+
+Hello, fellow goofers!
+
+First I'd love to extend my gratitude and thankfulness to the fullest possible extent 
+to all those who even bother to try this petty little piece of, if not too serious, 
+software developed also in "petty little" hands.
+
+The intangible creation is gently made to enable you guys to figure out some tidbits of 
+one of the most beloved and exhausted social networking services, namely, Twitter. 
+(And yes, the application was named after this!)
+
+You need three text files to initiate the application as the following:
+
+<user.txt>
+User profile is composed of three parts. 
+Identification number (string), sign-up date (string), and screen name (string).
+================================
+100445479
+Wed Dec 30 08:26:02 +0000 2009
+WITHYUE
+
+100929571
+Fri Jan 01 07:36:16 +0000 2010
+kimdabong2
+
+100935467
+Fri Jan 01 08:20:48 +0000 2010
+Parkmadam
+
+...
+================================
+
+<friend.txt>
+Friendship information is stored as a tuple. User id (string) and his/her friend id (string).
+================================
+100445479
+153968392
+
+100445479
+248036871
+
+100445479
+375691730
+
+...
+================================
+
+<word.txt>
+Word tweet is composed of three parts: User id (string), tweet date (string), and a word (string)
+================================
+218457497
+Sat Mar 17 14:46:49 +0000 2012
+@
+
+218457497
+Sat Mar 17 14:46:49 +0000 2012
+realjonghyun90
+
+218457497
+Sat Mar 17 14:46:49 +0000 2012
+!
+
+...
+================================
+
+Well, you may think the interface is pretty much self-explanatory, 
+however, here is "the" manual that may help you somehow 
+before getting your hands dirty with the humble apparatus.
+
+** Interface **
+=======================================================
+0. Read data files
+1. Display statistics
+2. Get more detailed statistics
+3. Top 5 most tweeted words
+4. Top 5 users who tweeted the most
+5. Find users who tweeted a word
+6. Find all people who are friends of the above users
+7. Delete all mentions of a word
+8. Delete all users who mentioned a word
+9. Find strongly connected components
+10. Find shortest path from a given user
+99. Quit
+=======================================================
+
+This is the very entry to the actual use of the application. 
+You'll be seeing this over and over again from the moment you start 
+the application all the while toward the very last second when you decide 
+to kill the program by selecting the "Quit" option. 
+FYI, selecting an option is very simple and easy. Look at the menu,
+choose the number that corresponds to your interest at the moment and enter it. 
+Too easy-peasy-lemon-squeezy, right?
+
+The following is the option-by-option description of the interface, 
+just in case things can be confusing and leave you with absolute oblivion...
+
+0.Read data files
+: At the very start of the application, you may first want to retrieve some 
+data to work with. By selecting this option, you have your application read 
+relevant data files and build the database upon which other jobs are handled. 
+Unless you can enjoy the true beauty of some empty data box of nothing, 
+please select this first! Otherwise, it will anyway call to your attention.
+You can exercise the option at any time you want. Plz, just remember that 
+this will overwrite and replace the current database.
+
+**Note : All jobs are handled based on the current database***
+
+1.Display statistics
+: This will display 3 basic statistics as follows.
+(example)
+=======================================================
+total users: 6995
+total friendship records: 69013
+total tweets: 92070
+=======================================================
+Results are not stored anywhere nor can be retrieved in the future. (Sorry!)
+You may take some notes (Class-y!) or select the option again!
+
+2.Get more detailed statistics
+: This will display 6 detailed statistics as follows.
+(example)
+=======================================================
+Average number of friends: 9.86605
+Minimum number of friends: 7
+Maximum number of friends: 10
+
+Average tweets per user: 13.16226
+Minimum tweets per user: 1
+Maximum tweets per user: 113
+=======================================================
+Results are not stored anywhere nor can be retrieved in the future.
+
+3.Top 5 most tweeted words
+: This will display the top 5 most tweeted words.
+Results are not stored anywhere nor can be retrieved in the future.
+
+4.Top 5 users who tweeted the most
+: This will display top 5 users who tweeted the most.
+Results are not stored anywhere nor can be retrieved in the future.
+
+5.Find users who tweeted a word
+: You enter a word, and this will display all the users who ever mentioned the word by their user id numbers.
+You can choose to store the results in the text file named 'usersOfword.txt'. (e.g. usersOfapple)
+You can only enter one word at a time.
+
+6.Find all people who are friends of the above users.
+: You enter a user id, and this will diplay all user ids of the friends of the user that you entered. 
+You can choose to store the results in the text file named 'friendsOfuser.txt'. (e.g. usersOf449511651)
+You can enter one user id at a time.
+
+7.Delete all mentions of a word
+: You enter a word, and this will delete all the mentions of the given word.
+You can enter one word at a time. The database is updated accordingly.
+
+8.Delete all users who mentioned a word
+: You enter a word, and this not only deletes all the mentions of the word but also traces the users
+that ever mentioned the word and deletes them, too. You can enter one word at a time.
+The database is updated accordingly.
+
+9.Find strongly connected components
+: Oops! Yet to be implemented
+
+10.Find shortest path from a given user
+: Yet to be implemented
+
+99. Quit
+: Adios!
